@@ -42,7 +42,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
 
     sigma = 1.0 #for RBF radius
 
-    semisupervised_disabled = enable_ssl
+    semisupervised_disabled = not enable_ssl 
 
     augmenter = transforms_v2.Compose([ #this will apply the transformations to the batch 
         transforms_v2.RandomHorizontalFlip(p=0.5),
@@ -363,7 +363,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
             y =  np.eye(10)[y_labelled_train] #one hot encoding of the labelled data
             y = np.concatenate((y,np.zeros((11200,10))),axis=0) #concat the unpredicted labels, which are just blank labels for now. 
 
-            #this way of computing euclidean distance is from "Euclidean Distance Trick" referred in report
+            #this way of computing euclidean distance is from "Euclidean Distance Trick" referred in the readme
             row_sums = np.sum(X**2, axis=1).reshape(-1, 1) #basically this is an array with the sum of powers (x1^2+x2^2+...+xn^2), so with this, if you did row_sums.T you'd get column sums. if you added row_sums +row_sums.T you'd get ||X||^2 + ||Y||^2 
             dists = row_sums - 2 *np.dot(X, X.T)+ row_sums.T # BUT since ||X||^2 + ||Y||^2 is not the same as ||(X+Y)||^2 , you have to do some algebra. expand (x+y)^2 and you get x^2+y^2-2xy, which is what we do here.
 
