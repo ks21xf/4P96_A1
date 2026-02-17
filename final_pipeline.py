@@ -44,6 +44,17 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
 
     semisupervised_disabled = not enable_ssl 
 
+    print("Parameter Rundown:")
+    print("Learning Rate:",lr)
+    print("Momentum Term:",momentum)
+    print("Normalization Method:",norm)
+    print("Weight Initialization Method:",init)
+    print("Data Augmentation Enabled?",aug)
+    print("Dropout Enabled?",dropout)
+    print("Adaptive Learning Rate?",alr)
+    print("SSL Component Enabled?",enable_ssl)
+
+
     augmenter = transforms_v2.Compose([ #this will apply the transformations to the batch 
         transforms_v2.RandomHorizontalFlip(p=0.5),
         transforms_v2.RandomCrop(28, padding=CROP_PADDING_NUM),
@@ -140,6 +151,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
 
     ######IF SEMISUPERVISED PORTION DISABLED, UNLABELED DATA LEFT OUT
     if semisupervised_disabled:
+        print("Training Start")
         #SIMULATION LOOP
         for seed in SEEDS:
             np.random.seed(seed)
@@ -294,7 +306,8 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
                 mean = np.nanmean(loss_history)
                 std = np.nanstd(loss_history)
                 if valid_loss > mean + std or epoch == EPOCHS-1: #overfitting occurs when the training loss is above the mean + std of the history of training losses. this means its starting to stray too far from the training data
-                    print('overfitting',epoch,valid_loss,valid_acc)
+                    print('overfitting detected.')
+                    print(f"At epoch {epoch}, Loss: {valid_loss}, Acc: {valid_acc}")
                     results['converge_time'].append(epoch)
                     break
 
@@ -313,11 +326,11 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
             logits = model(test)
             pred_probab = torch.nn.Softmax(dim=1)(logits)
             y_pred = pred_probab.argmax(1)
-            print(f"Predicted class: {y_pred}")
-
             _,final_acc = eval_model(test,y_test,model,criterion)
 
             results["test_acc"].append(final_acc)
+        print(f"Final Testing Accuracy: {np.mean(results['test_acc'])}")
+
 
     #######SEMISUPERVISED VERSION
     if not semisupervised_disabled:
@@ -345,6 +358,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
 
     if not semisupervised_disabled:
         #Since these take quite some time the prints help gauge progress
+        print("Semi-supervised label generation start")
 
         new_label_indices = None #will store the pseudolabels that we say are good enough to be treated as real labels
         new_y = None
@@ -454,6 +468,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
         y_valid = torch.tensor(y_valid, dtype=torch.long).to(DEVICE)
 
     if not semisupervised_disabled:
+        print("Training on labeled data and semi-supervised labels")
         for seed in SEEDS:
             np.random.seed(seed)
             torch.manual_seed(seed)
@@ -554,7 +569,8 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
                 mean = np.nanmean(loss_history)
                 std = np.nanstd(loss_history)
                 if valid_loss > mean + std or epoch == EPOCHS-1:
-                    print('overfitting',epoch,valid_loss,valid_acc)
+                    print('overfitting detected.')
+                    print(f"At epoch {epoch}, Loss: {valid_loss}, Acc: {valid_acc}")
                     results['converge_time'].append(epoch)
                     break
 
@@ -572,12 +588,9 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
         logits = model(test)
         pred_probab = torch.nn.Softmax(dim=1)(logits)
         y_pred = pred_probab.argmax(1)
-        print(f"Predicted class: {y_pred}")
-
         _,final_acc = eval_model(test,y_test,model,criterion)
-
         results["test_acc"].append(final_acc)
-
+    print("Final Accuracy:",np.mean(results['test_acc']))
 
 if __name__ == "__main__":
     #runs if the file is executed (like through bash)
