@@ -23,8 +23,8 @@ Before running the program, make sure that your device is capable of allocating 
 | --momentum | Changes momentum of network | float | any | 0.9 |
 | --norm | The normalization strategy the network uses | str | "None", "minmax" or "zscore" | "minmax" |
 | --init | The way the weights are initialized in the network | str | "he", "normal", "uniform", or "None" | "normal |
-| --aug | Enable data augmentation | bool | True or False | True |
-| --dropout | Enable dropout (regularization) | bool | True or False | True |
+| --aug | Enable data augmentation | bool | True or False | False |
+| --dropout | Enable dropout (regularization) | bool | True or False | False |
 | --alr | Enables an adaptive learning rate. You can pick between None, exponential decay or decay by a factor | str | "exp_decay","factor_decay" or "None" | "None" |
 | --enable_ssl | Enables the semi-supervised portion of the pipeline | bool | True or False | False |
 
