@@ -30,7 +30,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
     N_THIRD_LAYER = 32
     OVERFITTING_DETECTION_PARAMETER = 10
 
-    DROPOUT = dropout
+    DROPOUT = not dropout
     DROPOUT_VALUE = 0.25
 
     #adaptive learning rate
@@ -38,7 +38,7 @@ def main(lr, momentum,norm, init, aug,dropout, alr,enable_ssl):
     GAMMA = 0.95 #rate of exp decay
 
     #Data augmentation
-    AUGMENTATION = aug
+    AUGMENTATION = not aug
 
     sigma = 1.0 #for RBF radius
 
