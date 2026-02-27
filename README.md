@@ -1,3 +1,6 @@
+Name: Kohen Serravalle
+Student number: 7462351
+
 Hi marker
 
 Here's everything you need to know to run the code. final_pipeline.py is the file that contains the full pipeline with customizable parameters.
